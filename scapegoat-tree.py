@@ -23,8 +23,10 @@ class Node(object):
     def rebuildTree(self):
 
         #flatten
-
+        l = self.flatten()
         #rebuild
+        self.rebuildFromList(l)
+
 
     def flatten(self):
         #flatten tree to list
@@ -42,6 +44,24 @@ class Node(object):
         ## recursive build tree from list l[(math.floor(l.size()/2)+1:n-1)]
         ## link those two as left and right subtree on self 
         ## remember to check for leaf case.
+
+        left = math.floor(l.size()/2)-1
+        right = math.floor(l.size()/2)+1
+        length = len(l)
+        if length == 1:
+            l[0].left = None
+            l[0].right = None
+            return l[0]
+        elif length == 2:
+            l[0].left = None
+            l[0].right = None
+            l[1].left = l[0]
+            l[1].right = None
+            return l[1]
+        else:
+            l[math.floor(length/2)].left = self.rebuildFromList(l[0:math.floor(length/2)])
+            l[math.floor(length/2)].right = self.rebuildFromList(l[math.floor(length/2)+1:length])
+            return l[math.floor(length/2)]
 
 
 
@@ -70,13 +90,14 @@ class ScapegoatTree(object):
                 depth +=1
         if y == None:
             self.root = z
-        elif x == y.right:
+        elif key > y.key:
             y.right = z
         else:
             y.left = z
         #check deepness of node inserted
         if self.isDeepNode(depth):
-            #rebalance tree
+            # Rebalance tree
+            # somenode.rebuildTree()
 
     
 
@@ -124,8 +145,7 @@ class ScapegoatTree(object):
         #check whether too many nodes have been deleted.
         if self.isTimeForRebuild():
             #rebuild tree
-
-        return None
+            self.root.rebuildTree()
 
 
 
