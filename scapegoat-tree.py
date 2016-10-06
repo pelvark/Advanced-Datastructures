@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import math 
 
 class Node(object):
     def __init__(self, key):
@@ -7,25 +8,55 @@ class Node(object):
 
         self.left = None
         self.right = None
-        self.brother = None
-
-        self.size = 0
-        self.height = 0
-        self.depth = 0
 
 
+    def size(self):
+        if self.left is not None and self.right is not None:
+            return self.left.size()+self.right.size+1
+        elif self.left is not None:
+            return self.left.size()
+        elif self.right is not None:
+            return self.right.size()
+        else:
+            return 1
+
+    def rebuildTree(self):
+
+        #flatten
+
+        #rebuild
+
+    def flatten(self):
+        #flatten tree to list
+        l = []
+        if self.left is not None:
+            l.extend(self.left.flatten())
+        l.extend(self)
+        if self.right is not None:
+            l.extend(self.right.flatten())
+        return l
     
+    def rebuildFromList(self, l):
+        #rebuild a tree from list
+        ## Idea so far: recursive build tree from list l[(0:math.floor(l.size()/2)-1)]
+        ## recursive build tree from list l[(math.floor(l.size()/2)+1:n-1)]
+        ## link those two as left and right subtree on self 
+        ## remember to check for leaf case.
+
+
 
 class ScapegoatTree(object):
-    def __init__(self):
+    def __init__(self, alpha):
         #initiate a new scapegoat tree
         self.root = None
         self.size = 0
         self.max_size = 0
+        self.alpha = alpha
 
 
     def insert(self, key):
         self.updateSize(1)
+        depth = 0
         z = Node(key)
         y = None
         x = self.root
@@ -33,17 +64,19 @@ class ScapegoatTree(object):
             y = x
             if key < x.key:
                 x = x.left
+                depth +=1
             else:
                 x = x.right
+                depth +=1
         if y == None:
             self.root = z
         elif x == y.right:
             y.right = z
-            z.brother = y.left
         else:
             y.left = z
-            z.brother = y.right
-        
+        #check deepness of node inserted
+        if self.isDeepNode(depth):
+            #rebalance tree
 
     
 
@@ -87,7 +120,10 @@ class ScapegoatTree(object):
                         z.left = x.left
                         z.right = x.right
 
-                        
+        self.updateSize(-1)
+        #check whether too many nodes have been deleted.
+        if self.isTimeForRebuild():
+            #rebuild tree
 
         return None
 
@@ -107,10 +143,6 @@ class ScapegoatTree(object):
 
 
 
-
-
-
-
     # extra functions
     def updateSize(self, x):
         self.size = self.size + x
@@ -125,6 +157,16 @@ class ScapegoatTree(object):
             y = x
             x = x.left
         return x, y
+
+    def isDeepNode(self, depth):
+        if depth > math.floor(math.log(self.size, 1/self.alpha)):
+            return True
+        else: 
+            return False
+
+
+    def isTimeForRebuild(self):
+        return self.size < self.alpha*self.max_size
 
     
 
