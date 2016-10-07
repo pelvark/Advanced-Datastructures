@@ -12,13 +12,26 @@ class Node(object):
 
     def size(self):
         if self.left is not None and self.right is not None:
-            return self.left.size()+self.right.size+1
+            return self.left.size() + self.right.size + 2
         elif self.left is not None:
-            return self.left.size()
+            return self.left.size() + 1
         elif self.right is not None:
-            return self.right.size()
+            return self.right.size() + 1
         else:
-            return 1
+            return 0
+
+    def sizeGivenChildSize(self, childSize, isLeftChild):
+        if isLeftChild:
+            if self.right is None:
+                return childSize + 1
+            else:
+                return childSize + self.right.size()
+        else:
+            if self.left is None:
+                return childSize + 1
+            else:
+                return childSize + self.left.size()
+            
 
     def rebuildTree(self):
 
@@ -33,7 +46,7 @@ class Node(object):
         l = []
         if self.left is not None:
             l.extend(self.left.flatten())
-        l.extend(self)
+        l.append(self)
         if self.right is not None:
             l.extend(self.right.flatten())
         return l
@@ -70,17 +83,19 @@ class ScapegoatTree(object):
         #initiate a new scapegoat tree
         self.root = None
         self.size = 0
-        self.max_size = 0
+        self.maxSize = 0
         self.alpha = alpha
 
 
     def insert(self, key):
+        ancestorList = []
         self.updateSize(1)
         depth = 0
         z = Node(key)
         y = None
         x = self.root
         while x is not None:
+            ancestorList.append(x)
             y = x
             if key < x.key:
                 x = x.left
@@ -88,19 +103,32 @@ class ScapegoatTree(object):
             else:
                 x = x.right
                 depth +=1
-        if y == None:
+        if len(ancestorList) == 0:
             self.root = z
         elif key > y.key:
-            y.right = z
+            ancestorList[-1].right = z
         else:
-            y.left = z
+            ancestorList[-1].left = z
         #check deepness of node inserted
         if self.isDeepNode(depth):
-            # Rebalance tree
-            # somenode.rebuildTree()
+            # find scapegoat node
+            size = 0
+            previousCandidate = x
+            height = 0
+            for candidate in reversed(ancestorList):
+                height += 1
+                isLeftChild = (candidate.left == previousCandidate)
+                size = candidate.sizeGivenChildSize(size, isLeftChild)
+                # TODO: Fix that size can be 0
+                print(size)
+                if size != 0 and height > math.log(size, 1/self.alpha):
+                    # candidate is scapegoat node
+                    candidate.rebuildTree()
+                    break
+                previousCandidate = candidate
 
+                
     
-
     def delete(self, key):
         y = None
         x = self.root
@@ -155,9 +183,11 @@ class ScapegoatTree(object):
             if key < x.key:
                 x = x.left
             elif key == x.key:
+                return True
                 return x
             else:
                 x = x.right
+        return False
         return None
 
 
@@ -166,8 +196,8 @@ class ScapegoatTree(object):
     # extra functions
     def updateSize(self, x):
         self.size = self.size + x
-        if self.size > self.max_size
-            self.max_size = self.size
+        if self.size > self.maxSize:
+            self.maxSize = self.size
 
 
     def findSuccessorAndParent(self, x):
@@ -186,7 +216,7 @@ class ScapegoatTree(object):
 
 
     def isTimeForRebuild(self):
-        return self.size < self.alpha*self.max_size
+        return self.size < self.alpha*self.maxSize
 
     
 
@@ -195,3 +225,4 @@ class ScapegoatTree(object):
 
 if __name__ == "__main__":
     #handle input and run functions
+    pass
