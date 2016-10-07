@@ -19,7 +19,7 @@ class SkipList(object):
         #init
         self.head
         self.tail
-        self.max_level
+        self.maxLevel
 
     
     def insert(self, key)
@@ -33,6 +33,19 @@ class SkipList(object):
 
     def search(self, key):
         # search for a node with key
+        x = self.head
+        for i in range(self.maxLevel,0,-1):
+            while len(x.pointers)>=maxLevel and x.pointers[-1].key < key:
+                x = x.pointers[-1]
+        x = x.pointers[0]
+        if x is not None and x.key == key:
+            return True
+        else:
+            return False
+
+
+    def increaseMaxLevel(self):
+        #increase max level of list and add the missing pointers
 
 
 
