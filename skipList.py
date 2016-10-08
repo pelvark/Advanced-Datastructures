@@ -4,6 +4,7 @@ import random
 class Node(object):
     def __init__(self, key):
         #init
+        self.key = key
         self.level = 0
         self.pointers = []
 
@@ -17,35 +18,75 @@ class Node(object):
 class SkipList(object):
     def __init__(self):
         #init
-        self.head
-        self.tail
+        self.head = Node(None)
+        self.tail = Node(float("inf"))
         self.maxLevel
+        self.size = 0
 
     
-    def insert(self, key)
+    def insert(self, key):
         # insert a node with key 
-        x = Node(key)
+        update = []
+        x = self.head
+        for i in range(self.maxLevel,0,-1):
+            while len(x.pointers) >= i and x.pointers[i-1].key < key:
+                x = x.pointers[i-1]
+            update.append(x)
+        x = x.pointers[i-1]
+        if x.key == key:
+            # key already in list, replace it or something
+            pass
+        else:
+            x = Node(key)
+            update = reversed(update)
+            for i in range(0,x.level):
+                x.pointers.append(update[i].pointers[i])
+                update[i].pointers[i] = x
+            self.size += 1
+            if self.sizeTooBig():
+                self.increaseMaxLevel()
+            return True
 
 
     def delete(self, key):
         # search for a node with key, and delete it
+        pass
+        update = []
+        x = self.head
+        for i in range(self.maxLevel,0,-1):
+            while len(x.pointers) >= i and x.pointers[i-1].key < key:
+                x = x.pointers[i-1]
+            update.append(x)
+        x = x.pointers[i-1]
+        if x.key == key:
+            
+        else:
+            return False
+
 
 
     def search(self, key):
         # search for a node with key
         x = self.head
         for i in range(self.maxLevel,0,-1):
-            while len(x.pointers)>=maxLevel and x.pointers[-1].key < key:
-                x = x.pointers[-1]
-        x = x.pointers[0]
-        if x is not None and x.key == key:
-            return True
+            while len(x.pointers) >= i and x.pointers[i-1].key < key:
+                x = x.pointers[i-1]
+        if len(x.pointers) > 0 and x.pointers[0].key == key:
+            return x.pointers[0]
         else:
-            return False
+            return None
 
+    
 
+    #Utility functions
     def increaseMaxLevel(self):
-        #increase max level of list and add the missing pointers
+        # Increase max level of list and add the missing pointers
+        pass
+
+
+    def sizeTooBig(self):
+        # Determine if size is too big
+        pass
 
 
 
@@ -64,3 +105,4 @@ class SkipList(object):
 
 if __name__ == "__main__":
     #handle input and run functions
+    pass
