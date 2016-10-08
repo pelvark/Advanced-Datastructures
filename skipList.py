@@ -1,18 +1,22 @@
 #!/usr/bin/env python
 import random
+import math
 
 class Node(object):
     def __init__(self, key):
         #init
         self.key = key
-        self.level = 0
+        self.level = self.randomLevel()
         self.pointers = []
 
 
-    def determineLevel(self):
+    def randomLevel(self):
         # detemine the highest possible level of a node
         # should be changed to a formula with some probability.
-        return randint(1,10) 
+        level = 1
+        while random.random() < p and level < 32:
+            level += 1
+        return level
 
 
 class SkipList(object):
@@ -22,6 +26,7 @@ class SkipList(object):
         self.tail = Node(float("inf"))
         self.maxLevel
         self.size = 0
+        self.p = 0.5 # TODO: find better p
 
     
     def insert(self, key):
@@ -59,7 +64,12 @@ class SkipList(object):
             update.append(x)
         x = x.pointers[i-1]
         if x.key == key:
-            
+            update = reversed(update)
+            for i in range(0,min(x.level, self.maxLevel) + 1):            
+                update[i].pointers[i] = x.pointers[i]
+            self.size += -1
+            if self.sizeTooSmall():
+                self.maxLevel += -1
         else:
             return False
 
@@ -81,13 +91,29 @@ class SkipList(object):
     #Utility functions
     def increaseMaxLevel(self):
         # Increase max level of list and add the missing pointers
+        level = self.maxLevel
+        p = self.head
+        # q = p.pointers[level-1]
+        while len(p.pointers) >= level:
+            pass
+            # TODO: FINISH THIS
         pass
 
 
     def sizeTooBig(self):
         # Determine if size is too big
-        pass
+        if math.floor(math.log(self.size, 1/self.p)) > self.maxLevel:
+            return True
+        else:
+            return False
+    
 
+    def sizeTooSmall(self):
+        # Determine if size is too small
+        if math.ceil(math.log(self.size, 1/self.p)) < self.maxLevel:
+            return True
+        else:
+            return False
 
 
 
