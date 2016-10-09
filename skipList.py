@@ -93,11 +93,17 @@ class SkipList(object):
         # Increase max level of list and add the missing pointers
         level = self.maxLevel
         p = self.head
-        # q = p.pointers[level-1]
-        while len(p.pointers) >= level:
-            pass
-            # TODO: FINISH THIS
-        pass
+        q = p.pointers[-1]
+        while q.level >= level:
+            if q.level > level:
+                p.pointers.append(q)
+                p = q
+            q = p.pointers[-1]
+        if q == self.tail:
+            p.pointers.append(q)
+            self.maxLevel += 1
+        else:
+            print("ERROR, increasing max level has not reached until tail.")
 
 
     def sizeTooBig(self):
