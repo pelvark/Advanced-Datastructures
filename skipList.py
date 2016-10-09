@@ -69,7 +69,7 @@ class SkipList(object):
                 update[i].pointers[i] = x.pointers[i]
             self.size += -1
             if self.sizeTooSmall():
-                self.maxLevel += -1
+                self.decreaseMaxLevel()
         else:
             return False
 
@@ -104,6 +104,21 @@ class SkipList(object):
             self.maxLevel += 1
         else:
             print("ERROR, increasing max level has not reached until tail.")
+
+
+    def decreaseMaxLevel(self):
+        level = self.maxLevel
+        p = self.head
+        q = p.pointers[-1]
+        while q.level >= level:
+            if len(q.pointers) < level:
+                print("ERROR, trying to decrease level, but too far down"
+            else:
+                p.pointers.pop()
+                p = q
+                q = p.pointers[-1]
+        p.pointers.pop()
+        self.maxLevel += -1
 
 
     def sizeTooBig(self):
