@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import sys
 import math 
 import fileinput
 
@@ -233,9 +234,9 @@ if __name__ == "__main__":
     #handle input and run functions
     alpha = 0.75
     tree = ScapegoatTree(alpha)
+    print(sys.argv)
     for line in fileinput.input():
         l = line.split()
-        print ("Command: " + line)
         if l[0] == "I":
             result = tree.insert(int(l[1]))
             if result:
@@ -257,9 +258,6 @@ if __name__ == "__main__":
         else:
             print("ERROR: something other than I S or D was input")
 
-        print("Tree so far:")
-        tree.printTree()
-        print()
 
 
 
