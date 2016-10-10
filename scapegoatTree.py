@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import math 
+import fileinput
 
 class Node(object):
     def __init__(self, key):
@@ -12,33 +13,34 @@ class Node(object):
 
     def size(self):
         if self.left is not None and self.right is not None:
-            return self.left.size() + self.right.size + 2
+            return self.left.size() + self.right.size + 1
         elif self.left is not None:
             return self.left.size() + 1
         elif self.right is not None:
             return self.right.size() + 1
         else:
-            return 0
+            return 1
 
     def sizeGivenChildSize(self, childSize, isLeftChild):
         if isLeftChild:
             if self.right is None:
                 return childSize + 1
             else:
-                return childSize + self.right.size()
+                return childSize + self.right.size() + 1
         else:
             if self.left is None:
                 return childSize + 1
             else:
-                return childSize + self.left.size()
+                return childSize + self.left.size() + 1
             
 
     def rebuildTree(self):
 
+        #TODO: FIX THIS
         #flatten
         l = self.flatten()
         #rebuild
-        self.rebuildFromList(l)
+        return self.rebuildFromList(l)
 
 
     def flatten(self):
@@ -52,14 +54,6 @@ class Node(object):
         return l
     
     def rebuildFromList(self, l):
-        #rebuild a tree from list
-        ## Idea so far: recursive build tree from list l[(0:math.floor(l.size()/2)-1)]
-        ## recursive build tree from list l[(math.floor(l.size()/2)+1:n-1)]
-        ## link those two as left and right subtree on self 
-        ## remember to check for leaf case.
-
-        left = math.floor(l.size()/2)-1
-        right = math.floor(l.size()/2)+1
         length = len(l)
         if length == 1:
             l[0].left = None
@@ -76,6 +70,15 @@ class Node(object):
             l[math.floor(length/2)].right = self.rebuildFromList(l[math.floor(length/2)+1:length])
             return l[math.floor(length/2)]
 
+
+    def traverse(self):
+        if self.left is not None:
+            self.left.traverse()
+        if self is not None:
+            print(self.key, end="-")
+        if self.right is not None:
+            self.right.traverse()
+        
 
 
 class ScapegoatTree(object):
@@ -100,9 +103,11 @@ class ScapegoatTree(object):
             if key < x.key:
                 x = x.left
                 depth +=1
-            else:
+            elif key > x.key:
                 x = x.right
                 depth +=1
+            else:
+                return False
         if len(ancestorList) == 0:
             self.root = z
         elif key > y.key:
@@ -119,13 +124,12 @@ class ScapegoatTree(object):
                 height += 1
                 isLeftChild = (candidate.left == previousCandidate)
                 size = candidate.sizeGivenChildSize(size, isLeftChild)
-                # TODO: Fix that size can be 0
-                print(size)
                 if size != 0 and height > math.log(size, 1/self.alpha):
                     # candidate is scapegoat node
                     candidate.rebuildTree()
                     break
                 previousCandidate = candidate
+        return True
 
                 
     
@@ -140,7 +144,7 @@ class ScapegoatTree(object):
                 y = x
                 x = x.right
             elif key == x.key:
-                if x == y.left:
+                if y is not None and x == y.left:
                     if x.left is None:
                         y.left = x.right
                     elif x.right is None:
@@ -154,7 +158,7 @@ class ScapegoatTree(object):
                         y.left = z
                         z.left = x.left
                         z.right = x.right
-                if x == y.right:
+                if y is not None and x == y.right:
                     if x.left is None:
                         y.right = x.right
                     elif x.right is None:
@@ -168,12 +172,13 @@ class ScapegoatTree(object):
                         y.right = z
                         z.left = x.left
                         z.right = x.right
-
-        self.updateSize(-1)
-        #check whether too many nodes have been deleted.
-        if self.isTimeForRebuild():
-            #rebuild tree
-            self.root.rebuildTree()
+                self.updateSize(-1)
+                #check whether too many nodes have been deleted.
+                if self.isTimeForRebuild():
+                    #rebuild tree
+                    self.root = self.root.rebuildTree()
+                return True
+        return False
 
 
 
@@ -184,11 +189,9 @@ class ScapegoatTree(object):
                 x = x.left
             elif key == x.key:
                 return True
-                return x
             else:
                 x = x.right
         return False
-        return None
 
 
 
@@ -219,10 +222,43 @@ class ScapegoatTree(object):
         return self.size < self.alpha*self.maxSize
 
     
+    def printTree(self):
+        self.root.traverse()
 
 
 
 
 if __name__ == "__main__":
     #handle input and run functions
-    pass
+    alpha = 0.75
+    tree = ScapegoatTree(alpha)
+    for line in fileinput.input():
+        l = line.split()
+        print ("Command: " + line)
+        if l[0] == "I":
+            result = tree.insert(int(l[1]))
+            if result:
+                print("S")
+            else:
+                print("F")
+        elif l[0] == "D":
+            result = tree.delete(int(l[1]))
+            if result:
+                print("S")
+            else:
+                print("F")
+        elif l[0] == "S":
+            result = tree.search(int(l[1]))
+            if result:
+                print("S")
+            else:
+                print("F")
+        else:
+            print("ERROR: something other than I S or D was input")
+
+        print("Tree so far:")
+        tree.printTree()
+        print()
+
+
+
