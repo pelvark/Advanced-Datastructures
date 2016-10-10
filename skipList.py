@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import sys
+import fileinput
 import random
 import math
 
@@ -20,13 +22,14 @@ class Node(object):
 
 
 class SkipList(object):
-    def __init__(self):
+    def __init__(self, p):
         #init
         self.head = Node(None)
         self.tail = Node(float("inf"))
-        self.maxLevel
+        self.head.pointers.append(self.tail)
+        self.maxLevel = 1
         self.size = 0
-        self.p = 0.5 # TODO: find better p
+        self.p = p
 
     
     def insert(self, key):
@@ -37,25 +40,24 @@ class SkipList(object):
             while len(x.pointers) >= i and x.pointers[i-1].key < key:
                 x = x.pointers[i-1]
             update.append(x)
-        x = x.pointers[i-1]
+        x = x.pointers[0]
         if x.key == key:
-            # key already in list, replace it or something
-            pass
+            return False
+            # key already in list
         else:
             x = Node(key)
-            update = reversed(update)
-            for i in range(0,x.level):
-                x.pointers.append(update[i].pointers[i])
-                update[i].pointers[i] = x
+            for i in range(0,min(x.level, self.maxLevel)):
+                previousnode = update.pop()
+                x.pointers.append(previousnode.pointers[i])
+                previousnode.pointers[i] = x
             self.size += 1
             if self.sizeTooBig():
                 self.increaseMaxLevel()
             return True
+        return False
 
 
     def delete(self, key):
-        # search for a node with key, and delete it
-        pass
         update = []
         x = self.head
         for i in range(self.maxLevel,0,-1):
@@ -64,27 +66,27 @@ class SkipList(object):
             update.append(x)
         x = x.pointers[i-1]
         if x.key == key:
-            update = reversed(update)
-            for i in range(0,min(x.level, self.maxLevel) + 1):            
-                update[i].pointers[i] = x.pointers[i]
+            for i in range(0,min(x.level, self.maxLevel)):            
+                previousnode = update.pop()
+                previousnode.pointers[i] = x.pointers[i]
             self.size += -1
             if self.sizeTooSmall():
                 self.decreaseMaxLevel()
+            return True
         else:
             return False
 
 
 
     def search(self, key):
-        # search for a node with key
         x = self.head
         for i in range(self.maxLevel,0,-1):
             while len(x.pointers) >= i and x.pointers[i-1].key < key:
                 x = x.pointers[i-1]
         if len(x.pointers) > 0 and x.pointers[0].key == key:
-            return x.pointers[0]
+            return True
         else:
-            return None
+            return False
 
     
 
@@ -112,7 +114,7 @@ class SkipList(object):
         q = p.pointers[-1]
         while q.level >= level:
             if len(q.pointers) < level:
-                print("ERROR, trying to decrease level, but too far down"
+                print("ERROR, trying to decrease level, but too far down")
             else:
                 p.pointers.pop()
                 p = q
@@ -152,4 +154,28 @@ class SkipList(object):
 
 if __name__ == "__main__":
     #handle input and run functions
-    pass
+    p = 0.25
+    skiplist = SkipList(p)
+    for line in fileinput.input():
+        l = line.split()
+        if l[0] == "I":
+            result = skiplist.insert(int(l[1]))
+            if result:
+                print("S")
+            else:
+                print("F")
+        elif l[0] == "D":
+            result = skiplist.delete(int(l[1]))
+            if result:
+                print("S")
+            else:
+                print("F")
+        elif l[0] == "S":
+            result = skiplist.search(int(l[1]))
+            if result:
+                print("S")
+            else:
+                print("F")
+        else:
+            print("ERROR: something other than I S or D was input")
+
