@@ -223,7 +223,8 @@ class ScapegoatTree(object):
 
     
     def printTree(self):
-        self.root.traverse()
+        if self.root is not None:
+            self.root.traverse()
 
 
 
