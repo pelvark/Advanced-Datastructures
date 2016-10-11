@@ -13,7 +13,7 @@ class Node(object):
 
 
     def randomLevel(self):
-        # detemine the highest possible level of a node
+        # determine the highest possible level of a node
         # should be changed to a formula with some probability.
         level = 1
         while random.random() < p and level < 32:
@@ -25,6 +25,7 @@ class SkipList(object):
     def __init__(self, p):
         #init
         self.head = Node(None)
+        self.head.level = 32
         self.tail = Node(float("inf"))
         self.head.pointers.append(self.tail)
         self.maxLevel = 1
@@ -36,9 +37,11 @@ class SkipList(object):
         # insert a node with key 
         update = []
         x = self.head
+        #print("maxlevel: ", self.maxLevel)
         for i in range(self.maxLevel,0,-1):
             while len(x.pointers) >= i and x.pointers[i-1].key < key:
                 x = x.pointers[i-1]
+            #print("update getting ",x.key)
             update.append(x)
         x = x.pointers[0]
         if x.key == key:
@@ -46,8 +49,11 @@ class SkipList(object):
             # key already in list
         else:
             x = Node(key)
+            #self.traverseList()
             for i in range(0,min(x.level, self.maxLevel)):
                 previousnode = update.pop()
+                #print("x = ", "(",x.key,",",x.level,") ", "previous = ", previousnode.key)
+                #print("i = ", i, "previouslevel = ", previousnode.level)
                 x.pointers.append(previousnode.pointers[i])
                 previousnode.pointers[i] = x
             self.size += 1
@@ -93,19 +99,24 @@ class SkipList(object):
     #Utility functions
     def increaseMaxLevel(self):
         # Increase max level of list and add the missing pointers
+        print("INCREASING MAX LEVEL")
+        print("---------------------")
         level = self.maxLevel
         p = self.head
         q = p.pointers[-1]
-        while q.level >= level:
+        print("head level: ", len(p.pointers))
+        while q != self.tail:
+            print("followed pointer to node with key: ", q.key)
             if q.level > level:
+                print("increasing level of said node")
                 p.pointers.append(q)
                 p = q
-            q = p.pointers[-1]
-        if q == self.tail:
-            p.pointers.append(q)
-            self.maxLevel += 1
-        else:
-            print("ERROR, increasing max level has not reached until tail.")
+            q = q.pointers[-1]
+        print("Reached the tail")
+        p.pointers.append(q)
+        self.maxLevel += 1
+        print("head level after maxlvlincrease: ", len(self.head.pointers))
+        print("---------------------")
 
 
     def decreaseMaxLevel(self):
@@ -139,14 +150,16 @@ class SkipList(object):
             return False
 
 
-
-
-
-
-
-
-
-
+    def traverseList(self):
+        x = self.head
+        print("Maxlevel: ",self.maxLevel)
+        print("pointers length of head", len(x.pointers))
+        for i in range(self.maxLevel,0,-1):
+            while x != self.tail:
+                print("(", x.key, ")",end=" ")
+                x = x.pointers[i-1]
+            print()
+            x = self.head
 
 
 
