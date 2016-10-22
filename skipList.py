@@ -4,6 +4,8 @@ import fileinput
 import random
 import math
 
+comparisoncounter = 0
+
 class Node(object):
     def __init__(self, key):
         #init
@@ -35,13 +37,14 @@ class SkipList(object):
     
     def insert(self, key):
         # insert a node with key 
+        global comparisoncounter
         update = []
         x = self.head
-        #print("maxlevel: ", self.maxLevel)
         for i in range(self.maxLevel,0,-1):
             while len(x.pointers) >= i and x.pointers[i-1].key < key:
+                comparisoncounter += 1
                 x = x.pointers[i-1]
-            #print("update getting ",x.key)
+            comparisoncounter += 1
             update.append(x)
         x = x.pointers[0]
         if x.key == key:
@@ -49,11 +52,8 @@ class SkipList(object):
             # key already in list
         else:
             x = Node(key)
-            #self.traverseList()
             for i in range(0,min(x.level, self.maxLevel)):
                 previousnode = update.pop()
-                #print("x = ", "(",x.key,",",x.level,") ", "previous = ", previousnode.key)
-                #print("i = ", i, "previouslevel = ", previousnode.level)
                 x.pointers.append(previousnode.pointers[i])
                 previousnode.pointers[i] = x
             self.size += 1
@@ -64,11 +64,14 @@ class SkipList(object):
 
 
     def delete(self, key):
+        global comparisoncounter
         update = []
         x = self.head
         for i in range(self.maxLevel,0,-1):
             while len(x.pointers) >= i and x.pointers[i-1].key < key:
+                comparisoncounter += 1
                 x = x.pointers[i-1]
+            comparisoncounter += 1
             update.append(x)
         x = x.pointers[i-1]
         if x.key == key:
@@ -85,10 +88,13 @@ class SkipList(object):
 
 
     def search(self, key):
+        global comparisoncounter
         x = self.head
         for i in range(self.maxLevel,0,-1):
             while len(x.pointers) >= i and x.pointers[i-1].key < key:
+                comparisoncounter += 1
                 x = x.pointers[i-1]
+            comparisoncounter += 1
         if len(x.pointers) > 0 and x.pointers[0].key == key:
             return True
         else:
@@ -99,24 +105,16 @@ class SkipList(object):
     #Utility functions
     def increaseMaxLevel(self):
         # Increase max level of list and add the missing pointers
-        print("INCREASING MAX LEVEL")
-        print("---------------------")
         level = self.maxLevel
         p = self.head
         q = p.pointers[-1]
-        print("head level: ", len(p.pointers))
         while q != self.tail:
-            print("followed pointer to node with key: ", q.key)
             if q.level > level:
-                print("increasing level of said node")
                 p.pointers.append(q)
                 p = q
             q = q.pointers[-1]
-        print("Reached the tail")
         p.pointers.append(q)
         self.maxLevel += 1
-        print("head level after maxlvlincrease: ", len(self.head.pointers))
-        print("---------------------")
 
 
     def decreaseMaxLevel(self):
@@ -169,26 +167,30 @@ if __name__ == "__main__":
     #handle input and run functions
     p = 0.25
     skiplist = SkipList(p)
-    for line in fileinput.input():
+    while True:
+        line = sys.stdin.readline()
+        comparisoncounter = 0
         l = line.split()
+        if len(l)==0:
+            break
         if l[0] == "I":
             result = skiplist.insert(int(l[1]))
             if result:
-                print("S")
+                print("S - comparisons used: ", comparisoncounter)
             else:
-                print("F")
+                print("F - comparisons used: ", comparisoncounter)
         elif l[0] == "D":
             result = skiplist.delete(int(l[1]))
             if result:
-                print("S")
+                print("S - comparisons used: ", comparisoncounter)
             else:
-                print("F")
+                print("F - comparisons used: ", comparisoncounter)
         elif l[0] == "S":
             result = skiplist.search(int(l[1]))
             if result:
-                print("S")
+                print("S - comparisons used: ", comparisoncounter)
             else:
-                print("F")
+                print("F - comparisons used: ", comparisoncounter)
         else:
             print("ERROR: something other than I S or D was input")
 
