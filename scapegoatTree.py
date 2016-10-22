@@ -2,6 +2,7 @@
 import sys
 import math 
 import fileinput
+comparisoncounter = 0
 
 class Node(object):
     def __init__(self, key):
@@ -14,7 +15,7 @@ class Node(object):
 
     def size(self):
         if self.left is not None and self.right is not None:
-            return self.left.size() + self.right.size + 1
+            return self.left.size() + self.right.size() + 1
         elif self.left is not None:
             return self.left.size() + 1
         elif self.right is not None:
@@ -37,7 +38,6 @@ class Node(object):
 
     def rebuildTree(self):
 
-        #TODO: FIX THIS
         #flatten
         l = self.flatten()
         #rebuild
@@ -92,6 +92,7 @@ class ScapegoatTree(object):
 
 
     def insert(self, key):
+        global comparisoncounter 
         ancestorList = []
         self.updateSize(1)
         depth = 0
@@ -102,12 +103,15 @@ class ScapegoatTree(object):
             ancestorList.append(x)
             y = x
             if key < x.key:
+                comparisoncounter += 1
                 x = x.left
                 depth +=1
             elif key > x.key:
+                comparisoncounter += 1
                 x = x.right
                 depth +=1
             else:
+                comparisoncounter += 1
                 return False
         if len(ancestorList) == 0:
             self.root = z
@@ -135,16 +139,20 @@ class ScapegoatTree(object):
                 
     
     def delete(self, key):
+        global comparisoncounter 
         y = None
         x = self.root
         while x is not None:
             if key < x.key:
+                comparisoncounter += 1
                 y = x
                 x = x.left
             elif key > x.key:
+                comparisoncounter += 1
                 y = x
                 x = x.right
             elif key == x.key:
+                comparisoncounter += 1
                 if y is not None and x == y.left:
                     if x.left is None:
                         y.left = x.right
@@ -184,13 +192,17 @@ class ScapegoatTree(object):
 
 
     def search(self,key):
+        global comparisoncounter 
         x = self.root
         while x is not None:
             if key < x.key:
+                comparisoncounter += 1
                 x = x.left
             elif key == x.key:
+                comparisoncounter += 1
                 return True
             else:
+                comparisoncounter += 1
                 x = x.right
         return False
 
@@ -234,30 +246,32 @@ if __name__ == "__main__":
     #handle input and run functions
     alpha = 0.75
     tree = ScapegoatTree(alpha)
-    print(sys.argv)
-    for line in fileinput.input():
+    while True:
+        line = sys.stdin.readline()
+        comparisoncounter = 0
         l = line.split()
+        if len(l)==0:
+            break
         if l[0] == "I":
             result = tree.insert(int(l[1]))
             if result:
-                print("S")
+                print("S - comparisons used: " + str(comparisoncounter))
             else:
-                print("F")
+                print("F - comparisons used: " + str(comparisoncounter))
         elif l[0] == "D":
             result = tree.delete(int(l[1]))
             if result:
-                print("S")
+                print("S - comparisons used: " + str(comparisoncounter))
             else:
-                print("F")
+                print("F - comparisons used: " + str(comparisoncounter))
         elif l[0] == "S":
             result = tree.search(int(l[1]))
             if result:
-                print("S")
+                print("S - comparisons used: " + str(comparisoncounter))
             else:
-                print("F")
+                print("F - comparisons used: " + str(comparisoncounter))
         else:
-            print("ERROR: something other than I S or D was input")
-
+            break
 
 
 
