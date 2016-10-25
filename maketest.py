@@ -27,9 +27,20 @@ def sortedinput(n,f):
         print("I ", i, file=f)
     random.shuffle(l)
     for i in l: 
-        print("S ", i file=f)
+        print("S ", i, file=f)
 
-
+def runtest1(n,f):
+    m = n%5
+    n = n-m
+    l = list(range(0,n))
+    random.shuffle(l)
+    for i in range(0,n,5):
+        for k in range(0,5):
+            print("I ", l[i+k], file=f)
+        for k in range(0,5):
+            print("S ", l[random.randrange(0,i+5)], file=f)
+             
+        
 
 
 
@@ -48,6 +59,9 @@ if __name__=="__main__":
     elif sys.argv[1] == "sorted":
         f = open(sys.argv[3],"w")
         sortedinput(int(sys.argv[2]), f)
+    elif sys.argv[1] == "runtest1":
+        f = open(sys.argv[3],"w")
+        runtest1(int(sys.argv[2]), f)
 
             
             
