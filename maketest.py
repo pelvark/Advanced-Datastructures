@@ -1,5 +1,6 @@
 import sys
 import random
+random.seed(42)
 
 def randominput(n,f):
     l = list(range(0,n))

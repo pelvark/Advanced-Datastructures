@@ -3,6 +3,7 @@ import sys
 import fileinput
 import random
 import math
+random.seed(42)
 
 comparisoncounter = 0
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import sys
 import math 
-import fileinput
 comparisoncounter = 0
 
 class Node(object):
