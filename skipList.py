@@ -192,5 +192,4 @@ if __name__ == "__main__":
             else:
                 print("F - comparisons used: ", comparisoncounter)
         else:
-            print("ERROR: something other than I S or D was input")
-
+            break
