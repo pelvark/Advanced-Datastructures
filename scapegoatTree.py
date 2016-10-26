@@ -36,11 +36,13 @@ class Node(object):
             
 
     def rebuildTree(self):
-
         #flatten
         l = self.flatten()
+        #print("length= ",len(l))
         #rebuild
-        return self.rebuildFromList(l)
+        #print([l[i].key for i in range(len(l))])
+        self.rebuildFromList(l,0,len(l)-1)
+        #self.traverse()
 
 
     def flatten(self):
@@ -53,22 +55,26 @@ class Node(object):
             l.extend(self.right.flatten())
         return l
     
-    def rebuildFromList(self, l):
+    def rebuildFromList(self, l, i, j):
         length = len(l)
-        if length == 1:
+        if i==j:
+            #print("1", l[0].key, i==j)
             l[0].left = None
             l[0].right = None
             return l[0]
-        elif length == 2:
+        elif i+1==j:
+            #print("2", l[0].key, l[1].key,i+1==j)
             l[0].left = None
             l[0].right = None
             l[1].left = l[0]
             l[1].right = None
             return l[1]
         else:
-            l[math.floor(length/2)].left = self.rebuildFromList(l[0:math.floor(length/2)])
-            l[math.floor(length/2)].right = self.rebuildFromList(l[math.floor(length/2)+1:length])
-            return l[math.floor(length/2)]
+            #print("3", i<j)
+            mid = math.floor((i+j)/2)
+            l[mid].left = self.rebuildFromList(l, i, mid-1)
+            l[mid].right = self.rebuildFromList(l, mid+1, j)
+            return l[mid]
 
 
     def traverse(self):
@@ -115,9 +121,9 @@ class ScapegoatTree(object):
         if len(ancestorList) == 0:
             self.root = z
         elif key > y.key:
-            ancestorList[-1].right = z
+            y.right = z
         else:
-            ancestorList[-1].left = z
+            y.left = z
         #check deepness of node inserted
         if self.isDeepNode(depth):
             # find scapegoat node
@@ -131,7 +137,7 @@ class ScapegoatTree(object):
                 if size != 0 and height > math.log(size, 1/self.alpha):
                     # candidate is scapegoat node
                     candidate.rebuildTree()
-                    break
+                    return True
                 previousCandidate = candidate
         return True
 
