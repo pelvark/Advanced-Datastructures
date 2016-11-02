@@ -167,6 +167,13 @@ class SkipList(object):
 if __name__ == "__main__":
     #handle input and run functions
     p = 0.25
+    if len(sys.argv)>1:
+        p = float(sys.argv[1])
+        if 0<p<1:
+            pass
+        else:
+            print("You tried to set p to something not between 0 and 1. I set it to 0.25 intead")
+            p = 0.25
     skiplist = SkipList(p)
     while True:
         line = sys.stdin.readline()
@@ -177,20 +184,20 @@ if __name__ == "__main__":
         if l[0] == "I":
             result = skiplist.insert(int(l[1]))
             if result:
-                print("S - comparisons used: ", comparisoncounter)
+                print("S - comparisons used:", comparisoncounter)
             else:
-                print("F - comparisons used: ", comparisoncounter)
+                print("F - comparisons used:", comparisoncounter)
         elif l[0] == "D":
             result = skiplist.delete(int(l[1]))
             if result:
-                print("S - comparisons used: ", comparisoncounter)
+                print("S - comparisons used:", comparisoncounter)
             else:
-                print("F - comparisons used: ", comparisoncounter)
+                print("F - comparisons used:", comparisoncounter)
         elif l[0] == "S":
             result = skiplist.search(int(l[1]))
             if result:
-                print("S - comparisons used: ", comparisoncounter)
+                print("S - comparisons used:", comparisoncounter)
             else:
-                print("F - comparisons used: ", comparisoncounter)
+                print("F - comparisons used:", comparisoncounter)
         else:
             break

@@ -52,6 +52,11 @@ def test2(n,f):
     for i in l:
         print("S", i, file=f)
 
+def test3(n,f):
+    l = list(range(0,n))
+    random.shuffle(l)
+    for i in l:
+        print("I", i, file=f)
 
 
 
@@ -75,6 +80,9 @@ if __name__=="__main__":
     elif sys.argv[1] == "test2":
         f = open(sys.argv[3],"w")
         test2(int(sys.argv[2]), f)
+    elif sys.argv[1] == "test3":
+        f = open(sys.argv[3],"w")
+        test3(int(sys.argv[2]), f)
 
             
             

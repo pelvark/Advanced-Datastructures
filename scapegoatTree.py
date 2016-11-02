@@ -2,6 +2,7 @@
 import sys
 import math 
 comparisoncounter = 0
+rebuildsize = 0
 
 class Node(object):
     def __init__(self, key):
@@ -38,11 +39,10 @@ class Node(object):
     def rebuildTree(self):
         #flatten
         l = self.flatten()
-        #print("length= ",len(l))
+        global rebuildsize
+        rebuildsize = len(l)
         #rebuild
-        #print([l[i].key for i in range(len(l))])
         self.rebuildFromList(l,0,len(l)-1)
-        #self.traverse()
 
 
     def flatten(self):
@@ -58,19 +58,16 @@ class Node(object):
     def rebuildFromList(self, l, i, j):
         length = len(l)
         if i==j:
-            #print("1", l[0].key, i==j)
             l[0].left = None
             l[0].right = None
             return l[0]
         elif i+1==j:
-            #print("2", l[0].key, l[1].key,i+1==j)
             l[0].left = None
             l[0].right = None
             l[1].left = l[0]
             l[1].right = None
             return l[1]
         else:
-            #print("3", i<j)
             mid = math.floor((i+j)/2)
             l[mid].left = self.rebuildFromList(l, i, mid-1)
             l[mid].right = self.rebuildFromList(l, mid+1, j)
@@ -250,31 +247,40 @@ class ScapegoatTree(object):
 if __name__ == "__main__":
     #handle input and run functions
     alpha = 0.75
+    if len(sys.argv)>1:
+        alpha = float(sys.argv[1])
+        if 0<alpha<1:
+            pass
+        else:
+            print("You tried to set p to something not between 0 and 1. I set it to 0.75 intead")
+            p = 0.75
+
     tree = ScapegoatTree(alpha)
     while True:
         line = sys.stdin.readline()
         comparisoncounter = 0
+        rebuildsize = 0
         l = line.split()
         if len(l)==0:
             break
         if l[0] == "I":
             result = tree.insert(int(l[1]))
             if result:
-                print("S - comparisons used: " + str(comparisoncounter))
+                print("S - comparisons used:", comparisoncounter, "rebuildsize:", rebuildsize)
             else:
-                print("F - comparisons used: " + str(comparisoncounter))
+                print("F - comparisons used:",comparisoncounter)
         elif l[0] == "D":
             result = tree.delete(int(l[1]))
             if result:
-                print("S - comparisons used: " + str(comparisoncounter))
+                print("S - comparisons used:",comparisoncounter)
             else:
-                print("F - comparisons used: " + str(comparisoncounter))
+                print("F - comparisons used:",comparisoncounter)
         elif l[0] == "S":
             result = tree.search(int(l[1]))
             if result:
-                print("S - comparisons used: " + str(comparisoncounter))
+                print("S - comparisons used:",comparisoncounter)
             else:
-                print("F - comparisons used: " + str(comparisoncounter))
+                print("F - comparisons used:",comparisoncounter)
         else:
             break
 
