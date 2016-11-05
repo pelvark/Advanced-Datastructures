@@ -58,7 +58,7 @@ class RandomTree(object):
                 if len(ancestorList) > 0:
                     temp_y = y
                     y = ancestorList.pop()
-                    if y.left = temp_y:
+                    if y.left == temp_y:
                         y.left = z
                     else:
                         y.right = z
@@ -72,7 +72,7 @@ class RandomTree(object):
                 if len(ancestorList) > 0:
                     temp_y = y
                     y = ancestorList.pop()
-                    if y.left = temp_y:
+                    if y.left == temp_y:
                         y.left = z
                     else:
                         y.right = z
@@ -87,7 +87,9 @@ class RandomTree(object):
     def split(self, k):
         z = Node(key)
         z.priority = 0
-        self.insert(z)
+        check = self.insert(z)
+        if not check:
+            return None, None
         return self.root.left, self.root.right
 
 
@@ -118,24 +120,36 @@ class RandomTree(object):
                 x = x.right
         if x is None:
             return False
+        if x == self.root:
+            rootDeletion = True
+        else:
+            rootDeletion = False
         if x.left is not None and x.right is not None:
             z = self.merge(x.left, x.right)
-            if x == y.left:
+            if rootDeletion:
+                self.root = z
+            elif x == y.left:
                 y.left = z
             else:
                 y.right = z
         elif x.left is not None:
-            if x == y.left:
+            if rootDeletion:
+                self.root = x.left
+            elif x == y.left:
                 y.left = x.left
             else:
                 y.right = x.left
         elif x.right is not None:
-            if x == y.left:
+            if rootDeletion:
+                self.root = x.right
+            elif x == y.left:
                 y.left = x.right
             else:
                 y.right = x.right
         else:
-            if x == y.left:
+            if rootDeletion:
+                self.root = None
+            elif x == y.left:
                 y.left = None
             else:
                 y.right = None
@@ -176,6 +190,17 @@ if __name__ == "__main__":
             else:
                 print("F")
                 #print("F - comparisons used:",comparisoncounter)
+        elif l[0] == "M":
+            result1, result2 = tree.split(int(l[1]))
+            if result1 is not None or result2 is not None:
+                tree.delete(int(l[1]))
+                print("S")
+            else:
+                if self.root.priority == 0:
+                    tree.delete(int(l[1]))
+                    print("F - error, or tree was empty")
+                else:
+                    print("F - key chosen possibly already in tree")
         else:
             break
 
