@@ -10,14 +10,17 @@ class Node(object):
         
         self.version = version
         self.copy = None
-        self.extra = [None]*e
+        self.extra = []
 
 
 
 class LinkedList(object):
-    def __init__(self):
+    def __init__(self, e):
         self.header = []
         self.version = 0
+        self.e = e
+        #tail in the newest version
+        self.tail = None
 
     def newversion(self):
         self.version += 1
@@ -25,6 +28,7 @@ class LinkedList(object):
     # The operation search takes a version number v and an integer i as arguments and
     # returns the key of the ith element of the vth version
     def search(self, v, i):
+        flag = False
         j = len(self.header)
         # follow pointer with largest version smaller than v
         while j > 0:
@@ -33,12 +37,35 @@ class LinkedList(object):
                 break
         else:
             return False
-        while i>0:
-            #find element in extra list with largest version smaller than v
-            #if pointer is None, return false
+        while i > 1:
+            #find element in extra list with type next (True) and largest version smaller than v
+            #if pointer is None, return None
             #follow pointer and decrement i
+            j = len(x.extra) - 1
+            while j >= 0:
+                if x.extra[j][0] == True and x.extra[j][1] <= v:
+                    x = x.extra[j][2]
+                    i = i-1
+                    flag = True
+                    break
+                    # continue outer loop
+                j = j-1
             
+            if flag:
+                flag = False
+                continue
 
+            if x.next is not None:
+                x = x.next
+                i = i-1
+            else:
+                return None
+
+        return x
+
+    # The operation insert takes a key k and an integer i as arguments, and insert the
+    # key k as the new ith element in the list, i.e., between the (i − 1)st and ith element
+    # of the current newest version.
     def insert(self, k, i):
         if i == 1:
             
@@ -60,6 +87,8 @@ class LinkedList(object):
         #  add extra next pointer in x to new node and extra previous pointer in y to new node
         #  
 
+    # The operation update takes a key and an integer i as arguments, and updates the
+    # key in the ith element to the given key in the newest version.
     def update(self, k, i):
         elif len(self.header)>0:
             x = self.header[-1]
