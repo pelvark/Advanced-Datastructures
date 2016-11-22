@@ -52,37 +52,54 @@ class LinkedList(object):
     # key k as the new ith element in the list, i.e., between the (i − 1)st and ith element
     # of the current newest version.
     def insert(self, k, i):
+        y = Node(k, self.version) 
         if i == 1:
-
+            if len(self.header) > 0 and self.header[-1][0] == self.version:
+                #overwrite
+                z = self.header[-1][1]
+                self.header[-1][1] = y
+            elif len(self.header) > 0:
+                z = self.header[-1][1]
+                self.header.append((self.version, y))        
+            else:
+                self.header.append((self.version, y))        
+                return True    
+            # take care of the right side of the inserted node:
+            # put previous first element as next of inserted element
+            # unless it has full extra list, then create copy node
+            if len(z.extra) >= self.e:
+                zcopy = makecopy(z, False, y)
+                y.next = zcopy
+            else:
+                z.extra.append(False, self.version, y)
+                y.next = z
         else:
             x = self.search(self.version, i-1)
-        z = self.newestNext(x, self.version) 
-        #now x the element at index i-1, it's newest next pointer points to z
-        # insert node
-        y = Node(k, self.version) 
-        y.prev = x
-        y.next = z
-        #if z is None, insert the point as tail.
-        if z is None:
-            pass
-        else:
+            z = self.newestNext(x, self.version) 
+            #now x the element at index i-1, it's newest next pointer points to z
+            # insert node
+            #if z is None, insert the point as tail.
+            if z is not None:
+                if len(z.extra) >= self.e:
+                    zcopy = makecopy(z, False, y)
+                    y.next = zcopy
+                    # make copy node of z
+                    # set extra pointer (prev) of z copy to y
+                    # set next pointer of y to z copy
+                else:
+                    z.extra.append((False, self.version, y))
+                    y.next = z
+
             if len(x.extra) >= self.e:
+                xcopy = makecopy(x, True, y)
+                y.prev = xcopy
                 # make copy node of x
                 # set extra pointer (next) of x copy to y
                 # set previous pointer of y to x copy
-                pass
-
             else:
                 x.extra.append((True, self.version, y))
+                y.prev = x
 
-
-            if len(z.extra) >= self.e:
-                # make copy node of z
-                # set extra pointer (prev) of z copy to y
-                # set next pointer of y to z copy
-                pass
-            else:
-                z.extra.append((False, self.version, y))
         #if x or z has a full extra list, then a copy node must be made 
         #  copy of x should have most recent extra previous pointer of x, and have a next pointer to new node
         #  same with z but previous and next swapped
@@ -93,14 +110,33 @@ class LinkedList(object):
     # The operation update takes a key and an integer i as arguments, and updates the
     # key in the ith element to the given key in the newest version.
     def update(self, k, i):
-        elif len(self.header)>0:
-            x = self.header[-1]
-        else: 
+        x = self.search(self.version, i)
+        if x is None:
             return False
-        while i>1:
-            #find element in extra list with largest version smaller than current version
-            #if pointer is None, return false
-            #follow pointer and decrement i
+        if x.version == self.version:
+            x.key = k
+            return True
+
+        copy = Node(original.key, self.version)
+        x.copy = copy
+        xprev = newestPrev(x, self.version)
+        xnext = newestNext(x, self.version)
+        # if x.prev.extra is full, make copy of x.prev
+        # same with next
+        if len(xprev.extra) >= self.e:
+            y = makecopy(xprev, True, copy) 
+            copy.prev = y
+        else:
+            xprev.extra.append((True, self.version, copy))
+            copy.prev = xprev
+
+        if len(xnext.extra) >= self.e:
+            y = makecopy(xnext, True, copy) 
+            copy.next = y
+        else:
+            xnext.extra.append((False, self.version, copy))
+            copy.next = y
+        
         
 
 
@@ -143,26 +179,38 @@ class LinkedList(object):
 
     def makecopy(self, original, isleft, a):
         copy = Node(original.key, self.version)
+        original.copy = copy
         if isleft:
             copy.next = a
             prev = newestPrev(original, self.version)
-            if len(prev.extra) >= self.e:
-                recopy = self.makecopy(prev, True, copy)
-                copy.prev = recopy
+            if prev is not None:
+                if len(prev.extra) >= self.e:
+                    recopy = self.makecopy(prev, True, copy)
+                    copy.prev = recopy
+                else:
+                    prev.extra.append((True, self.version, copy))
             else:
-                prev.extra.append((True, self.version, copy))
+                # Have pointer from self.header to copy
+                if self.header[-1][0] == self.version:
+                    self.header[-1][1] = copy
+                else:
+                    self.header.append((self.version, copy))
         else:
             copy.prev = a
             next = newestPrev(original, self.version)
-            if len(next.extra) >= self.e:
-                recopy = self.makecopy(next, True, copy)
-                copy.next = recopy
-            else:
-                prev.extra.append((False, self.version, copy))
+            if next is not None:
+                if len(next.extra) >= self.e:
+                    recopy = self.makecopy(next, False, copy)
+                    copy.next = recopy
+                else:
+                    prev.extra.append((False, self.version, copy))
+        return copy
+
 
 if __name__ == "__main__":
     #handle input and run functions
-    ll = LinkedList()
+    e = 2
+    ll = LinkedList(e)
 
     while True:
         line = sys.stdin.readline()
