@@ -28,18 +28,15 @@ class LinkedList(object):
     # The operation search takes a version number v and an integer i as arguments and
     # returns the key of the ith element of the vth version
     def search(self, v, i):
-        flag = False
-        #print("length of header:",len(self.header))
         j = len(self.header) -1
         # follow pointer with largest version smaller than v
         while j >= 0:
             if self.header[j][0] <= v:
                 x = self.header[j][1]
-                #print("succesfully found node:", x.key)
                 break
-            j = j-1
+            j += -1
         else:
-            return False
+            return None
         while i > 1:
             #find element in extra list with type next (True) and largest version smaller than v
             #if pointer is None, return None
@@ -47,8 +44,7 @@ class LinkedList(object):
             x = self.newestNext(x, v)
             if x is None:
                 return None
-            i = i-1
-
+            i += -1
         return x
 
     # The operation insert takes a key k and an integer i as arguments, and insert the
@@ -88,7 +84,6 @@ class LinkedList(object):
         while j >= 0:
             if x.extra[j][0] == True and x.extra[j][1] <= v:
                 x = x.extra[j][2]
-                flag = True
                 return x
             j = j-1
         return x.next
@@ -98,7 +93,6 @@ class LinkedList(object):
         while j >= 0:
             if x.extra[j][0] == False and x.extra[j][1] <= v:
                 x = x.extra[j][2]
-                flag = True
                 return x
             j = j-1
         return x.prev
@@ -174,8 +168,16 @@ class LinkedList(object):
                 else:
                     y.next.extra.append([False, self.version, y])
         
-    def traverselist(self, version):
-        pass
+    def traverseList(self, version):
+        i = 1
+        result = ""
+        while True:
+            x = self.search(version, i)
+            if x is None:
+                break
+            result += "-" + str(x.key)
+            i += 1
+        return result
 
 if __name__ == "__main__":
     #handle input and run functions
@@ -216,6 +218,11 @@ if __name__ == "__main__":
             print("S")
         elif l[0] == "V":
             print(ll.version)
+        elif l[0] == "T":
+            print(ll.traverseList(int(l[1])))
+        elif l[0] == "TA":
+            for i in range(0, ll.version+1):
+                print("Version:", i, "list:", ll.traverseList(i))
         else:
             break
 
