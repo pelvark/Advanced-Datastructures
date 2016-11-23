@@ -20,21 +20,22 @@ class LinkedList(object):
         self.version = 0
         self.e = e
         #tail in the newest version
-        self.tail = None
+        #self.tail = None
 
-    def newversion(self):
+    def newVersion(self):
         self.version += 1
 
     # The operation search takes a version number v and an integer i as arguments and
     # returns the key of the ith element of the vth version
     def search(self, v, i):
         flag = False
-        j = len(self.header)
+        j = len(self.header) -1
         # follow pointer with largest version smaller than v
-        while j > 0:
+        while j >= 0:
             if self.header[j][0] <= v:
                 x = self.header[j][1]
                 break
+            j = j-1
         else:
             return False
         while i > 1:
@@ -60,18 +61,18 @@ class LinkedList(object):
                 self.header[-1][1] = y
             elif len(self.header) > 0:
                 z = self.header[-1][1]
-                self.header.append((self.version, y))        
+                self.header.append([self.version, y])        
             else:
-                self.header.append((self.version, y))        
+                self.header.append([self.version, y])        
                 return True    
             # take care of the right side of the inserted node:
             # put previous first element as next of inserted element
             # unless it has full extra list, then create copy node
             if len(z.extra) >= self.e:
-                zcopy = makecopy(z, False, y)
+                zcopy = self.makecopy(z, False, y)
                 y.next = zcopy
             else:
-                z.extra.append(False, self.version, y)
+                z.extra.append([False, self.version, y])
                 y.next = z
         else:
             x = self.search(self.version, i-1)
@@ -81,24 +82,25 @@ class LinkedList(object):
             #if z is None, insert the point as tail.
             if z is not None:
                 if len(z.extra) >= self.e:
-                    zcopy = makecopy(z, False, y)
+                    zcopy = self.makecopy(z, False, y)
                     y.next = zcopy
                     # make copy node of z
                     # set extra pointer (prev) of z copy to y
                     # set next pointer of y to z copy
                 else:
-                    z.extra.append((False, self.version, y))
+                    z.extra.append([False, self.version, y])
                     y.next = z
 
             if len(x.extra) >= self.e:
-                xcopy = makecopy(x, True, y)
+                xcopy = self.makecopy(x, True, y)
                 y.prev = xcopy
                 # make copy node of x
                 # set extra pointer (next) of x copy to y
                 # set previous pointer of y to x copy
             else:
-                x.extra.append((True, self.version, y))
+                x.extra.append([True, self.version, y])
                 y.prev = x
+        return True
 
         #if x or z has a full extra list, then a copy node must be made 
         #  copy of x should have most recent extra previous pointer of x, and have a next pointer to new node
@@ -114,28 +116,39 @@ class LinkedList(object):
         if x is None:
             return False
         if x.version == self.version:
+            print("version in node",x.version," is same as the current version",self.version," so overwriting")
             x.key = k
             return True
 
-        copy = Node(original.key, self.version)
+        copy = Node(x.key, self.version)
         x.copy = copy
-        xprev = newestPrev(x, self.version)
-        xnext = newestNext(x, self.version)
-        # if x.prev.extra is full, make copy of x.prev
-        # same with next
-        if len(xprev.extra) >= self.e:
-            y = makecopy(xprev, True, copy) 
+        xprev = self.newestPrev(x, self.version)
+        xnext = self.newestNext(x, self.version)
+        
+        # if xprev.extra is full, make copy of xprev
+        #TODO: can there be a situation where xprev.newestNext is the same version as copy?
+        if xprev is None:
+            # add pointer from header
+            self.header.append([self.version, copy])
+        elif len(xprev.extra) >= self.e:
+            y = self.makecopy(xprev, True, copy) 
             copy.prev = y
         else:
-            xprev.extra.append((True, self.version, copy))
+            xprev.extra.append([True, self.version, copy])
             copy.prev = xprev
 
-        if len(xnext.extra) >= self.e:
-            y = makecopy(xnext, True, copy) 
+        # same with xnext
+        if xnext is None:
+            #updated the tail
+            pass
+        elif len(xnext.extra) >= self.e:
+            y = self.makecopy(xnext, True, copy) 
             copy.next = y
         else:
-            xnext.extra.append((False, self.version, copy))
+            xnext.extra.append([False, self.version, copy])
             copy.next = y
+
+        return True
         
         
 
@@ -143,17 +156,21 @@ class LinkedList(object):
     def newestNext(self, x, v):
         flag = False
         j = len(x.extra) - 1
+        #print("find newest next of", x.key)
         while j >= 0:
+            #print("checking if extra pointer is a next", x.extra[j][0], "and the version",x.extra[j][1] ," is smaller than", v)
             if x.extra[j][0] == True and x.extra[j][1] <= v:
                 x = x.extra[j][2]
+                #print("It was, following the pointer to", x.key)
                 flag = True
                 break
+            #print("it wasnt, decrement j")
             j = j-1
         
         if flag:
             return x
-
         if x.next is not None:
+            #print("following nodes original pointer to", x.next.key)
             return x.next
         else:
             return None
@@ -176,7 +193,8 @@ class LinkedList(object):
         else:
             return None
         
-
+    # Recursively makes copy nodes to either left or right. a is the cause of the copying and 
+    # isleft is a boolean which is true if a is supposed to be the newest next of the copy, false if newest previous
     def makecopy(self, original, isleft, a):
         copy = Node(original.key, self.version)
         original.copy = copy
@@ -188,13 +206,14 @@ class LinkedList(object):
                     recopy = self.makecopy(prev, True, copy)
                     copy.prev = recopy
                 else:
-                    prev.extra.append((True, self.version, copy))
+                    prev.extra.append([True, self.version, copy])
             else:
                 # Have pointer from self.header to copy
+                #TODO: the overwrite may never happen
                 if self.header[-1][0] == self.version:
                     self.header[-1][1] = copy
                 else:
-                    self.header.append((self.version, copy))
+                    self.header.append([self.version, copy])
         else:
             copy.prev = a
             next = newestPrev(original, self.version)
@@ -203,7 +222,7 @@ class LinkedList(object):
                     recopy = self.makecopy(next, False, copy)
                     copy.next = recopy
                 else:
-                    prev.extra.append((False, self.version, copy))
+                    prev.extra.append([False, self.version, copy])
         return copy
 
 
@@ -226,7 +245,7 @@ if __name__ == "__main__":
                 print("F")
                 #print("F - comparisons used:",comparisoncounter)
         elif l[0] == "U":
-            result = tree.update(int(l[1]), int(l[2]))
+            result = ll.update(int(l[1]), int(l[2]))
             if result:
                 print("S")
                 #print("S - comparisons used:",comparisoncounter)
@@ -236,14 +255,16 @@ if __name__ == "__main__":
         elif l[0] == "S":
             result = ll.search(int(l[1]), int(l[2]))
             if result is not None:
-                print("S")
+                print("S - value:",result.key )
                 #print("S - comparisons used:",comparisoncounter)
             else:
                 print("F")
                 #print("F - comparisons used:",comparisoncounter)
         elif l[0] == "N":
-            result = ll.newversion
+            result = ll.newVersion()
             print("S")
+        elif l[0] == "V":
+            print(ll.version)
         else:
             break
 
