@@ -29,11 +29,13 @@ class LinkedList(object):
     # returns the key of the ith element of the vth version
     def search(self, v, i):
         flag = False
+        #print("length of header:",len(self.header))
         j = len(self.header) -1
         # follow pointer with largest version smaller than v
         while j >= 0:
             if self.header[j][0] <= v:
                 x = self.header[j][1]
+                #print("succesfully found node:", x.key)
                 break
             j = j-1
         else:
@@ -55,60 +57,15 @@ class LinkedList(object):
     def insert(self, k, i):
         y = Node(k, self.version) 
         if i == 1:
-            if len(self.header) > 0 and self.header[-1][0] == self.version:
-                #overwrite
-                z = self.header[-1][1]
-                self.header[-1][1] = y
-            elif len(self.header) > 0:
-                z = self.header[-1][1]
-                self.header.append([self.version, y])        
-            else:
-                self.header.append([self.version, y])        
-                return True    
-            # take care of the right side of the inserted node:
-            # put previous first element as next of inserted element
-            # unless it has full extra list, then create copy node
-            if len(z.extra) >= self.e:
-                zcopy = self.makecopy(z, False, y)
-                y.next = zcopy
-            else:
-                z.extra.append([False, self.version, y])
-                y.next = z
+            if len(self.header) > 0:
+                y.next = self.header[-1][1]
+            self.pointerUpdate(y)
         else:
-            x = self.search(self.version, i-1)
-            z = self.newestNext(x, self.version) 
-            #now x the element at index i-1, it's newest next pointer points to z
-            # insert node
-            #if z is None, insert the point as tail.
-            if z is not None:
-                if len(z.extra) >= self.e:
-                    zcopy = self.makecopy(z, False, y)
-                    y.next = zcopy
-                    # make copy node of z
-                    # set extra pointer (prev) of z copy to y
-                    # set next pointer of y to z copy
-                else:
-                    z.extra.append([False, self.version, y])
-                    y.next = z
-
-            if len(x.extra) >= self.e:
-                xcopy = self.makecopy(x, True, y)
-                y.prev = xcopy
-                # make copy node of x
-                # set extra pointer (next) of x copy to y
-                # set previous pointer of y to x copy
-            else:
-                x.extra.append([True, self.version, y])
-                y.prev = x
+            y.prev = self.search(self.version, i-1)
+            y.next = self.newestNext(y.prev, self.version)
+            self.pointerUpdate(y)
         return True
-
-        #if x or z has a full extra list, then a copy node must be made 
-        #  copy of x should have most recent extra previous pointer of x, and have a next pointer to new node
-        #  same with z but previous and next swapped
-        #else   
-        #  add extra next pointer in x to new node and extra previous pointer in z to new node
         
-
     # The operation update takes a key and an integer i as arguments, and updates the
     # key in the ith element to the given key in the newest version.
     def update(self, k, i):
@@ -116,82 +73,35 @@ class LinkedList(object):
         if x is None:
             return False
         if x.version == self.version:
-            print("version in node",x.version," is same as the current version",self.version," so overwriting")
             x.key = k
             return True
-
-        copy = Node(x.key, self.version)
+        copy = Node(k, self.version)
         x.copy = copy
-        xprev = self.newestPrev(x, self.version)
-        xnext = self.newestNext(x, self.version)
-        
-        # if xprev.extra is full, make copy of xprev
-        #TODO: can there be a situation where xprev.newestNext is the same version as copy?
-        if xprev is None:
-            # add pointer from header
-            self.header.append([self.version, copy])
-        elif len(xprev.extra) >= self.e:
-            y = self.makecopy(xprev, True, copy) 
-            copy.prev = y
-        else:
-            xprev.extra.append([True, self.version, copy])
-            copy.prev = xprev
-
-        # same with xnext
-        if xnext is None:
-            #updated the tail
-            pass
-        elif len(xnext.extra) >= self.e:
-            y = self.makecopy(xnext, True, copy) 
-            copy.next = y
-        else:
-            xnext.extra.append([False, self.version, copy])
-            copy.next = y
-
+        copy.prev = self.newestPrev(x, self.version)
+        copy.next = self.newestNext(x, self.version)
+        self.pointerUpdate(copy)
         return True
-        
-        
 
-
+    ############# UTILITY FUNCTIONS #############
     def newestNext(self, x, v):
-        flag = False
         j = len(x.extra) - 1
-        #print("find newest next of", x.key)
         while j >= 0:
-            #print("checking if extra pointer is a next", x.extra[j][0], "and the version",x.extra[j][1] ," is smaller than", v)
             if x.extra[j][0] == True and x.extra[j][1] <= v:
                 x = x.extra[j][2]
-                #print("It was, following the pointer to", x.key)
                 flag = True
-                break
-            #print("it wasnt, decrement j")
+                return x
             j = j-1
-        
-        if flag:
-            return x
-        if x.next is not None:
-            #print("following nodes original pointer to", x.next.key)
-            return x.next
-        else:
-            return None
+        return x.next
 
     def newestPrev(self, x, v):
-        flag = False
         j = len(x.extra) - 1
         while j >= 0:
             if x.extra[j][0] == False and x.extra[j][1] <= v:
                 x = x.extra[j][2]
                 flag = True
-                break
+                return x
             j = j-1
-        
-        if flag:
-            return x
-
-        if x.prev is not None:
-            return x.prev
-        else:
-            return None
+        return x.prev
         
     # Recursively makes copy nodes to either left or right. a is the cause of the copying and 
     # isleft is a boolean which is true if a is supposed to be the newest next of the copy, false if newest previous
@@ -200,31 +110,72 @@ class LinkedList(object):
         original.copy = copy
         if isleft:
             copy.next = a
-            prev = newestPrev(original, self.version)
-            if prev is not None:
-                if len(prev.extra) >= self.e:
-                    recopy = self.makecopy(prev, True, copy)
-                    copy.prev = recopy
+            copy.prev = self.newestPrev(original, self.version)
+            if copy.prev is not None:
+                if copy.prev.version == self.version:
+                    copy.prev.next = copy
+                elif len(copy.prev.extra) >= self.e:
+                    copy.prev = self.makecopy(copy.prev, True, copy)
                 else:
-                    prev.extra.append([True, self.version, copy])
+                    copy.prev.extra.append([True, self.version, copy])
             else:
-                # Have pointer from self.header to copy
-                #TODO: the overwrite may never happen
-                if self.header[-1][0] == self.version:
-                    self.header[-1][1] = copy
-                else:
-                    self.header.append([self.version, copy])
+                self.header.append([self.version, copy])
         else:
             copy.prev = a
-            next = newestPrev(original, self.version)
-            if next is not None:
-                if len(next.extra) >= self.e:
-                    recopy = self.makecopy(next, False, copy)
-                    copy.next = recopy
+            copy.next = newestNext(original, self.version)
+            if copy.next is not None:
+                if copy.next.version == self.version:
+                    copy.next.prev = copy
+                elif len(copy.next.extra) >= self.e:
+                    copy.next = self.makecopy(copy.next, False, copy)
                 else:
-                    prev.extra.append([False, self.version, copy])
+                    copy.next.extra.append([False, self.version, copy])
         return copy
 
+    # Updates pointers of the previous and next nodes of a node.
+    def pointerUpdate(self, y):
+        if y.prev is not None:
+            if y.prev.version == self.version:
+                y.prev.next = y
+            else:
+                j = len(y.prev.extra) - 1
+                while j >= 0:
+                    if y.prev.extra[j][0] == True and y.prev.extra[j][1] <= self.version:
+                        if y.prev.extra[j][1] == self.version:
+                            y.prev.extra[j][2] = y
+                            break
+                        elif len(y.prev.extra) >= self.e:
+                            y.prev = self.makecopy(y.prev, True, y)
+                            break
+                    j = j-1
+                else:
+                    y.prev.extra.append([True, self.version, y])
+        else:
+            #y is first element, and self.header should point to it
+            if len(self.header) > 0 and self.header[-1][0] == self.version:
+                self.header[-1][1] = y
+            else:
+                self.header.append([self.version, y])
+
+        if y.next is not None:
+            if y.next.version == self.version:
+                y.next.prev = y
+            else:
+                j = len(y.next.extra) - 1
+                while j >= 0:
+                    if y.next.extra[j][0] == True and y.next.extra[j][1] <= self.version:
+                        if y.next.extra[j][1] == self.version:
+                            y.next.extra[j][2] = y
+                            break
+                        elif len(y.next.extra) >= self.e:
+                            y.next = self.makecopy(y.next, False, y)
+                            break
+                    j = j-1
+                else:
+                    y.next.extra.append([False, self.version, y])
+        
+    def traverselist(self, version):
+        pass
 
 if __name__ == "__main__":
     #handle input and run functions
