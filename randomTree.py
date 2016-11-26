@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 import sys
 import random
+size = 0
+depthsum = 0
 
 
 class Node(object):
@@ -155,6 +157,17 @@ class RandomTree(object):
                 y.right = None
         return True
 
+    def traverse(self, x, depth=1):
+        global size 
+        global depthsum
+        depthsum += depth
+        size += 1
+        if x.left is not None:
+            self.traverse(x.left, depth+1)
+        print("-", x.key, "|", depth)
+        if x.right is not None:
+            self.traverse(x.right, depth+1)
+		
 
 
 if __name__ == "__main__":
@@ -201,6 +214,11 @@ if __name__ == "__main__":
                     print("F - error, or tree was empty")
                 else:
                     print("F - key chosen possibly already in tree")
+        elif l[0] == "T":
+            depthsum = 0
+            size = 0
+            tree.traverse(tree.root)
+            print("average depth of nodes:", depthsum/size)
         else:
             break
 
