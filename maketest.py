@@ -59,6 +59,26 @@ def test3(n,f):
         print("I", i, file=f)
 
 
+def test4(n,f):
+    # many random inserts and searches in one version
+    for i in range(1,n+1):
+        print("I", i, i, file=f)
+    for i in range(1,n+1):
+        print("S", 0, i, file=f)
+
+def test5(n,f):
+    # many random inserts with new version each time
+    l = list(range(1,n+1))
+    random.shuffle(l)
+    for i in range(1,n+1):
+        j = random.randint(1,i)
+        print("I", i, j, file=f)
+        print("N", file=f)
+    for i in range(1,n+1):
+        print("S", n, i, file=f)
+
+def test6(n,f):
+    pass
 
 
 
@@ -83,6 +103,16 @@ if __name__=="__main__":
     elif sys.argv[1] == "test3":
         f = open(sys.argv[3],"w")
         test3(int(sys.argv[2]), f)
+    elif sys.argv[1] == "test4":
+        f = open(sys.argv[3],"w")
+        test4(int(sys.argv[2]), f)
+    elif sys.argv[1] == "test5":
+        f = open(sys.argv[3],"w")
+        test5(int(sys.argv[2]), f)
+    elif sys.argv[1] == "test6":
+        f = open(sys.argv[3],"w")
+        test6(int(sys.argv[2]), f)
+    
 
             
             
