@@ -158,16 +158,17 @@ class RandomTree(object):
                 y.right = None
         return True
 
-    def traverse(self, x, depth=1):
+    def traverse(self, x, printdepth, depth=1):
         global size 
         global depthsum
         depthsum += depth
         size += 1
         if x.left is not None:
-            self.traverse(x.left, depth+1)
-        print("-", x.key, "|", depth)
+            self.traverse(x.left, printdepth, depth+1)
+        if printdepth:
+            print("key:", x.key, "|", "depth:", depth)
         if x.right is not None:
-            self.traverse(x.right, depth+1)
+            self.traverse(x.right, printdepth, depth+1)
 
 
 
@@ -219,7 +220,10 @@ if __name__ == "__main__":
         elif l[0] == "T":
             depthsum = 0
             size = 0
-            tree.traverse(tree.root)
+            if l[1] == "D":
+                tree.traverse(tree.root, True)
+            elif l[1] == "A":
+                tree.traverse(tree.root, False)
             print("average depth of nodes:", depthsum/size)
         else:
             break
