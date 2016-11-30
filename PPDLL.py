@@ -116,7 +116,7 @@ class LinkedList(object):
                 self.header.append([self.version, copy])
         else:
             copy.prev = a
-            copy.next = newestNext(original, self.version)
+            copy.next = self.newestNext(original, self.version)
             if copy.next is not None:
                 if copy.next.version == self.version:
                     copy.next.prev = copy
