@@ -179,6 +179,30 @@ class LinkedList(object):
             i += 1
         return result
 
+    def countNodesInVersion(self, version):
+        i = 1
+        result = []
+        while True:
+            x = self.search(version, i)
+            if x is None:
+                break
+            result.append((x.key, x.version))
+            i += 1
+        return result
+
+    def countNodes(self):
+        # IMPORTANT: this only works if all keys in the PPLL are distinct,
+        # ie. if a key is an id for a node. 
+        l = []
+        for v in range(0, self.version+1):
+            l.extend(self.countNodesInVersion(v))
+        result = []
+        for i in l:
+            if i not in result:
+                result.append(i)
+        return len(result)
+
+
 if __name__ == "__main__":
     #handle input and run functions
     e = 2
@@ -223,6 +247,9 @@ if __name__ == "__main__":
         elif l[0] == "TA":
             for i in range(0, ll.version+1):
                 print("Version:", i, "list:", ll.traverseList(i))
+        elif l[0] == "C":
+            result = ll.countNodes()
+            print("unique nodes in PPLL:", result)
         else:
             break
 
