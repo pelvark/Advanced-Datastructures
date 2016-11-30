@@ -163,25 +163,33 @@ to an output file can be seen below:
 \end{lstlisting}
 
 \section*{Random Trees}
+Random trees is a mix between a search tree and a heap, but where
+nodes in the random tree have uniformly random priorities assigned.
+
+\subsection*{Input/Output}
 Input for random trees is a number of lines each consisting of one capital 
-letter, possibly followed by one space and then a key (which must be an integer).
+letter, possibly followed by one space and then some symbol.
 The letters and their meaning are as follows: 
 "I" followed by a key will insert said key into the tree.
 "D" followed by a key will delete said key from the tree.
 "S" followed by a key will search for said key in the tree.
 "M" followed by a key will first split the tree with said key as split value,
 and then merge the two resulting trees. The key can't already exist in the tree.
-"T" without being followed by a key, will do a traversal of the tree and print all keys in the tree and their depth in the tree.
+"T" followed by a "D", will do a traversal of the 
+tree and print all keys in the tree and their depth in the tree. and then 
+the average depth of the tree. If it is followed by an "A" instead, it will only
+print the average.
 
 \medskip
 %TODO: write about output
 
-\medskip
-The methods are implemented as described in the assignment. 
-The tree itself only has a pointer to the root.
-The nodes only have information for children pointers, priority value and the key of the node.
-Priorities are chosen uniformly at random from all integers in the range
-$[1,2^30-1]$. 
+\subsection*{Implementation}
+The random tree is implemented as described in the assignment. 
+The tree structure itself only has a pointer to the root.
+The nodes only have information for children pointers, priority value 
+and the key of the node.
+Priorities are chosen at random (as uniformly random as python is able to do)
+from all integers in the range $[1,2^30-1]$.
 \textbf{Insert} is implemented using an ancestor list, so that the single
 rotations to fix the priority structure does not need nodes to have parent pointers.
 Then after inserting, The inserted node will make single rotations with
@@ -201,7 +209,20 @@ and also where the size of the tree and the sum of all depths are counted.
 This is to find the average depth as well. 
 
 
-\medskip
+\subsection*{Testing}
+The access time of nodes in a tree can be described as the depth of said node.
+To find the depth of all node and to calculate the average, the method
+{\it traverse} was written. It prints all node depths and also the average depth.
+
+The program {\it maketest.py} was used to generate different kinds of input 
+since it will be interesting to see how the random tree performs against 
+different inputs.
+\paragraph{Random input}
+
+\paragraph{Sorted input}
+
+\paragraph{Reversely sorted input}
+
 %TODO: write about tests
 
 
