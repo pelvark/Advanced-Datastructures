@@ -58,15 +58,52 @@ def test3(n,f):
     for i in l:
         print("I", i, file=f)
 
-
 def test4(n,f):
+    #random input for random tree
+    m = n%50
+    n = n-m
+    l = list(range(0,n))
+    random.shuffle(l)
+    for i in range(0,n,50):
+        for k in range(0,50):
+            print("I", l[i+k], file=f)
+        print("T A", file=f)
+    print("T D", file=f)
+    
+
+def test5(n,f):
+    #sorted input for random tree
+    m = n%50
+    n = n-m
+    l = list(range(0,n))
+    for i in range(0,n,50):
+        for k in range(0,50):
+            print("I", l[i+k], file=f)
+        print("T A", file=f)
+    print("T D", file=f)
+
+def test6(n,f):
+    #reverse sorted input for random tree
+    m = n%50
+    n = n-m
+    l = list(range(n-1,-1,-1))
+    for i in range(0,n,50):
+        for k in range(0,50):
+            print("I", l[i+k], file=f)
+        print("T A", file=f)
+    print("T D", file=f)
+
+
+def testX(n,f):
+    # for PPLL
     # many random inserts and searches in one version
     for i in range(1,n+1):
         print("I", i, i, file=f)
     for i in range(1,n+1):
         print("S", 0, i, file=f)
 
-def test5(n,f):
+def testX(n,f):
+    # for PPLL
     # many random inserts with new version each time
     l = list(range(1,n+1))
     random.shuffle(l)
@@ -77,7 +114,7 @@ def test5(n,f):
     for i in range(1,n+1):
         print("S", n, i, file=f)
 
-def test6(n,f):
+def testX(n,f):
     pass
 
 
