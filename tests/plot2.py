@@ -7,11 +7,11 @@ import math
 
 #random tree results
 def rtvalues(filename):
+    # takes results of randomtree and makes data for averages and variations
     f = open(filename,"r")
     lines = f.readlines()
     averages = []
     depths = []
-    comp = []
     for line in lines:
         line = line.split()
         if line[0] == "average":
@@ -24,29 +24,109 @@ def rtvalues(filename):
     d2 = [i[1] for i in d]
     return averages, d1, d2
 
-averages, d1, d2 = rtvalues("filename")
+randaverages, randd1, randd2 = rtvalues("rresult1")
+sortaverages, sortd1, sortd2 = rtvalues("rresult2")
+rsortaverages, rsortd1, rsortd2 = rtvalues("rresult3")
+
 #plot with average depth as a function of n.
 x = [a*50 for a in range(1,int(len(averages))+1)]
 plt.figure(1)
-plt.plot(x,averages)
+rand, = plt.plot(x, randaverages  , label='random')
+sort, = plt.plot(x, sortaverages  , label='sorted')
+rsort,= plt.plot(x, rsortaverages , label='reverse sorted')
+plt.legend()
 plt.xlabel('n')
 plt.ylabel('average depth')
 plt.savefig('averagedepth.png')
 
 # histogram with variations depths.
 plt.figure(2)
-plt.plot(d1, d2)
+plt.plot(randd1, randd2)
 plt.xlabel('depth')
 plt.ylabel('number of nodes')
-plt.savefig("depthvariation.png")
+plt.savefig("randdepthvariation.png")
 
+plt.figure(3)
+plt.plot(sortd1, sortd2)
+plt.xlabel('depth')
+plt.ylabel('number of nodes')
+plt.savefig("sortdepthvariation.png")
 
+plt.figure(4)
+plt.plot(rsortd1, rsortd2)
+plt.xlabel('depth')
+plt.ylabel('number of nodes')
+plt.savefig("rsortdepthvariation.png")
 
 
 #PPLL results
+def ppllvalues(filename):
+    # takes results of randomtree and makes data for averages and variations
+    f = open(filename,"r")
+    lines = f.readlines()
+    nodes = []
+    space = []
+    for line in lines:
+        line = line.split()
+        if line[0] == "nodes:":
+            nodes.append(line[-1])
+        if line[0] == "space":
+            space.append(line[-1])
+    return nodes, space
 
+# first test what e value is best with random input, 
+# then test that e values result with sorted, random, allfirst
+x = [a*100 for a in range(1,int(len(averages))+1)]
 
+#graph node use with different e
+nodes2, space2 = ppllvalues("ppll2")
+nodes3, space3 = ppllvalues("ppll3")
+nodes4, space4 = ppllvalues("ppll4")
+nodes8, space8 = ppllvalues("ppll8")
 
+plt.figure(5)
+node2, = plt.plot(x, nodes2  , label='e=2')
+node3, = plt.plot(x, nodes3  , label='e=3')
+node4, = plt.plot(x, nodes4  , label='e=4')
+node8, = plt.plot(x, nodes8  , label='e=8')
+plt.legend()
+plt.xlabel('n')
+plt.ylabel('nodes')
+plt.savefig('enodes.png')
+
+#graph pointeruse with different e
+plt.figure(6)
+space2, = plt.plot(x, space2  , label='e=2')
+space3, = plt.plot(x, space3  , label='e=3')
+space4, = plt.plot(x, space4  , label='e=4')
+space8, = plt.plot(x, space8  , label='e=8')
+plt.legend()
+plt.xlabel('n')
+plt.ylabel('space')
+plt.savefig('espace.png')
+
+#graph nodes in rand, sort, allfirst with best e
+nodesrand, spacerand = ppllvalues("ppllrand")
+nodessort, spacesort = ppllvalues("ppllsort")
+nodesfirst, spacefirst = ppllvalues("ppllfirst")
+
+plt.figure(7)
+nodesrand,   = plt.plot(x, nodesrand   , label='random')
+nodessort,   = plt.plot(x, nodessort   , label='sorted')
+nodesfirst,  = plt.plot(x, nodesfirst  , label='all first')
+plt.legend()
+plt.xlabel('n')
+plt.ylabel('nodes')
+plt.savefig('diffnodes.png')
+
+plt.figure(8)
+spacerand,   = plt.plot(x, spacerand   , label='random')
+spacesort,   = plt.plot(x, spacesort   , label='sorted')
+spacefirst,  = plt.plot(x, spacefirst  , label='all first')
+plt.legend()
+plt.xlabel('n')
+plt.ylabel('space')
+plt.savefig('diffspace.png')
 
 
 

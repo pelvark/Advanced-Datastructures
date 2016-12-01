@@ -181,7 +181,14 @@ the average depth of the tree. If it is followed by an "A" instead, it will only
 print the average.
 
 \medskip
-%TODO: write about output
+Output for random trees is dependent on the input, if an insertion, 
+deletion, or search is successful
+an "S" is printed, and if unsuccessful an "F" is printed. 
+Merging will print an S if successful and if not it will print whether
+a merge was attempted with an empty tree (a key with too 
+large or small value given), or if the key given was already
+in the tree.
+
 
 \subsection*{Implementation}
 The random tree is implemented as described in the assignment. 
@@ -244,9 +251,13 @@ list of said version number.
 "TA" will traverse all versions of the PPLL.
 
 \medskip
-%TODO: write about output
+As for the unmentioned output, inserting, updating, and changing version 
+will print an "S" if it was successful
+and an "F" if not. Search will print an "S" followed 
+by the key in the node found
+if successful and an "F" if unsuccessful. 
 
-\medskip
+\subsection*{Implementation}
 The PPLL is implemented using copy nodes, the idea is that when a node goes 
 through changes, either through updates or updates of pointers. Newer versions 
 of the node can be represented by a copy of the node, and then updating pointers
@@ -362,7 +373,8 @@ The pseudocode for updating can be seen in Algorithm \ref{update}
 \end{algorithm}
 %TODO:write about implementation
 
-\medskip
+\subsection*{Testing}
+
 %TODO: write about tests
 
 
