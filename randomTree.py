@@ -224,7 +224,7 @@ if __name__ == "__main__":
                 tree.traverse(tree.root, True)
             elif l[1] == "A":
                 tree.traverse(tree.root, False)
-            print("average depth of nodes:", depthsum/size)
+                print("average depth of nodes:", depthsum/size)
         else:
             break
 
