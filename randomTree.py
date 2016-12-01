@@ -186,26 +186,20 @@ if __name__ == "__main__":
             result = tree.insert(int(l[1]))
             if result:
                 print("S")
-                #print("S - comparisons used:", comparisoncounter, "rebuildsize:", rebuildsize)
             else:
                 print("F")
-                #print("F - comparisons used:",comparisoncounter)
         elif l[0] == "D":
             result = tree.delete(int(l[1]))
             if result:
                 print("S")
-                #print("S - comparisons used:",comparisoncounter)
             else:
                 print("F")
-                #print("F - comparisons used:",comparisoncounter)
         elif l[0] == "S":
             result = tree.search(int(l[1]))
             if result is not None:
                 print("S")
-                #print("S - comparisons used:",comparisoncounter)
             else:
                 print("F")
-                #print("F - comparisons used:",comparisoncounter)
         elif l[0] == "M":
             result1, result2 = tree.split(int(l[1]))
             if result1 is not None or result2 is not None:
