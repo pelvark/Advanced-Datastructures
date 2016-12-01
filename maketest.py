@@ -94,61 +94,89 @@ def test6(n,f):
     print("T D", file=f)
 
 
-def testX(n,f):
+def test7(n,f):
     # for PPLL
-    # many random inserts and searches in one version
+    # sorted inserts with new version for each, and random searches
+    m = n%50
+    n = n-m
+    for i in range(1,n+1,50):
+        for k in range(0,50):
+            print("I", i+k, i+k, file=f)
+            print("N", file=f)
+        print("C N",file=f)
+        print("C S",file=f)
+    """
     for i in range(1,n+1):
-        print("I", i, i, file=f)
-    for i in range(1,n+1):
-        print("S", 0, i, file=f)
+        j = random.randint(1,n)
+        k = random.randint(1,j+1)
+        print("S", j, k, file=f)
+    """
 
-def testX(n,f):
+def test8(n,f):
     # for PPLL
     # many random inserts with new version each time
     l = list(range(1,n+1))
     random.shuffle(l)
+    for i in range(1,n+1,50):
+        for k in range(0,50):
+            j = random.randint(1,i+k)
+            print("I", i+k, j, file=f)
+            print("N", file=f)
+        print("C N",file=f)
+        print("C S",file=f)
+    """
     for i in range(1,n+1):
-        j = random.randint(1,i)
-        print("I", i, j, file=f)
-        print("N", file=f)
-    for i in range(1,n+1):
-        print("S", n, i, file=f)
+        j = random.randint(1,n)
+        k = random.randint(1,j+1)
+        print("S", j, k, file=f)
+    """
 
-def testX(n,f):
-    pass
+def test9(n,f):
+    # many inserts in first space with new versions, random searches
+    for i in range(1,n+1,50):
+        for k in range(0,50):
+            print("I", i+k, 1, file=f)
+            print("N", file=f)
+        print("C N",file=f)
+        print("C S",file=f)
+    """
+    for i in range(1,n+1):
+        j = random.randint(1,n)
+        k = random.randint(1,j+1)
+        print("S", j, k, file=f)
+    """
 
 
 
 if __name__=="__main__":
     if len(sys.argv) == 1:
         print("no arguments given")
-    elif sys.argv[1] == "random":
+    else:
         f = open(sys.argv[3],"w")
-        randominput(int(sys.argv[2]), f)
-    elif sys.argv[1] == "randomdelete":
-        f = open(sys.argv[3],"w")
-        randomwithdeletion(int(sys.argv[2]), f)
-    elif sys.argv[1] == "sorted":
-        f = open(sys.argv[3],"w")
-        sortedinput(int(sys.argv[2]), f)
-    elif sys.argv[1] == "test1":
-        f = open(sys.argv[3],"w")
-        test1(int(sys.argv[2]), f)
-    elif sys.argv[1] == "test2":
-        f = open(sys.argv[3],"w")
-        test2(int(sys.argv[2]), f)
-    elif sys.argv[1] == "test3":
-        f = open(sys.argv[3],"w")
-        test3(int(sys.argv[2]), f)
-    elif sys.argv[1] == "test4":
-        f = open(sys.argv[3],"w")
-        test4(int(sys.argv[2]), f)
-    elif sys.argv[1] == "test5":
-        f = open(sys.argv[3],"w")
-        test5(int(sys.argv[2]), f)
-    elif sys.argv[1] == "test6":
-        f = open(sys.argv[3],"w")
-        test6(int(sys.argv[2]), f)
+        if sys.argv[1] == "random":
+            randominput(int(sys.argv[2]), f)
+        elif sys.argv[1] == "randomdelete":
+            randomwithdeletion(int(sys.argv[2]), f)
+        elif sys.argv[1] == "sorted":
+            sortedinput(int(sys.argv[2]), f)
+        elif sys.argv[1] == "test1":
+            test1(int(sys.argv[2]), f)
+        elif sys.argv[1] == "test2":
+            test2(int(sys.argv[2]), f)
+        elif sys.argv[1] == "test3":
+            test3(int(sys.argv[2]), f)
+        elif sys.argv[1] == "test4":
+            test4(int(sys.argv[2]), f)
+        elif sys.argv[1] == "test5":
+            test5(int(sys.argv[2]), f)
+        elif sys.argv[1] == "test6":
+            test6(int(sys.argv[2]), f)
+        elif sys.argv[1] == "test7":
+            test7(int(sys.argv[2]), f)
+        elif sys.argv[1] == "test8":
+            test8(int(sys.argv[2]), f)
+        elif sys.argv[1] == "test9":
+            test9(int(sys.argv[2]), f)
     
 
             
