@@ -102,15 +102,12 @@ def test7(n,f):
     for i in range(1,n+1,50):
         for k in range(0,50):
             print("I", i+k, i+k, file=f)
+            j = random.randint(1,i+k)
+            print("U", i+k, j, file=f)
             print("N", file=f)
         print("C N",file=f)
         print("C S",file=f)
-    """
-    for i in range(1,n+1):
-        j = random.randint(1,n)
-        k = random.randint(1,j+1)
-        print("S", j, k, file=f)
-    """
+        
 
 def test8(n,f):
     # for PPLL
@@ -122,29 +119,22 @@ def test8(n,f):
             j = random.randint(1,i+k)
             print("I", i+k, j, file=f)
             print("N", file=f)
+            j = random.randint(1,i+k)
+            print("U", i+k, j, file=f)
+            print("N", file=f)
         print("C N",file=f)
         print("C S",file=f)
-    """
-    for i in range(1,n+1):
-        j = random.randint(1,n)
-        k = random.randint(1,j+1)
-        print("S", j, k, file=f)
-    """
 
 def test9(n,f):
     # many inserts in first space with new versions, random searches
     for i in range(1,n+1,50):
         for k in range(0,50):
             print("I", i+k, 1, file=f)
+            j = random.randint(1,i+k)
+            print("U", i+k, j, file=f)
             print("N", file=f)
         print("C N",file=f)
         print("C S",file=f)
-    """
-    for i in range(1,n+1):
-        j = random.randint(1,n)
-        k = random.randint(1,j+1)
-        print("S", j, k, file=f)
-    """
 
 
 
