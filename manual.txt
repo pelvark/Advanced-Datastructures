@@ -1,20 +1,21 @@
 Description of how to run the programs:
-Scapegoat tree:
+Random tree:
   example:
-    $ python3 scapegoatTree.py < inputfile > outputfile
-  It also works without files, and you can change the alpha value by giving it as an argument.
-  example:
-    $ python3 scapegoatTree.py 0.65 < inputfile > outputfile
+    $ python3 randomTree.py < inputfile > outputfile
     
-Skip List:
+Partially Persistent Linked List:
   example:
-    $ python3 skipList.py < inputfile > outputfile
-  It also works without files, and you can change the p value by giving it as an argument.
+    $ python3 PPLL.py < inputfile > outputfile
+  It also works without files, and you can change the e value by giving it as an argument.
   example:
-    $ python3 scapegoatTree.py 0.125 < inputfile > outputfile
+    $ python3 PPLL.py 4 < inputfile > outputfile
 
 Maketest:
   example: 
-    $ python3 maketest.py random 1000 testfile
+    $ python3 maketest.py test5 1000 testfile
   maketest takes 3 arguments, what kind of test, the size of the input, and the output file name
-  The possible kinds of tests are "random", "randomdelete", "sorted", "test1", "test2", "test3"
+  The possible kinds of tests made for random trees are:
+  "test4", "test5", "test6"
+  The possible kinds of tests made for PPLL are:
+  "test7", "test8", "test9"
+  
