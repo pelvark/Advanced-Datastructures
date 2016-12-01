@@ -180,15 +180,23 @@ class LinkedList(object):
         return result
 
     def countNodesInVersion(self, version):
-        i = 1
+        # searching for last element and saving underways
         result = []
-        while True:
-            x = self.search(version, i)
-            if x is None:
+        j = len(self.header) -1
+        while j >= 0:
+            if self.header[j][0] <= version:
+                x = self.header[j][1]
+                result.append((x.key, x.version))
                 break
+            j += -1
+        else:
+            return result
+        while True:
+            x = self.newestNext(x, version)
+            if x is None:
+                return result
             result.append((x.key, x.version))
-            i += 1
-        return result
+
 
     def countNodes(self):
         # IMPORTANT: this only works if all keys in the PPLL are distinct,
@@ -207,6 +215,10 @@ if __name__ == "__main__":
     #handle input and run functions
     e = 2
     ll = LinkedList(e)
+    if len(sys.argv)>1:
+        te = float(sys.argv[1])
+        if te<1:
+            e = te
 
     while True:
         line = sys.stdin.readline()
